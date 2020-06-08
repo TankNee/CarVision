@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<title>新建</title>
+	<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" />
+</head>
+
+<body>
+	<div id="app">
+		<el-container>
+			
+			</el-aside>
+			<el-main :span="17">
+				<h3>身份证正面识别</h3>
+				<el-upload drag action="http://localhost:3000/imageRecognition?type=recognizeIdentityCard&side=face"
+					:on-success="upsuccessIdcf" :on-error="uperror">
+					<i class="el-icon-upload"></i>
+					<div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+				</el-upload>
+				<el-card class="box-card">
+					<div class="text item">
+						{{'姓名: ' + idName }}
+					</div>
+					<div class="text item">
+						{{'性别: ' + gender }}
+					</div>
+					<div class="text item">
+						{{'身份证号码: ' + idNumber }}
+					</div>
+				</el-card>
+				<h3>身份证背面识别</h3>
+				<el-upload drag action="http://localhost:3000/imageRecognition?type=recognizeIdentityCard&side=back"
+					:on-success="upsuccessIdcb" :on-error="uperror">
+					<i class="el-icon-upload"></i>
+					<div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+				</el-upload>
+				<el-card class="box-card">
+					<div class="text item">
+						{{'签发机关： ' + gov }}
+					</div>
+					<div class="text item">
+						{{'开始日期： ' + startDate }}
+					</div>
+					<div class="text item">
+						{{'结束日期： ' + endDate }}
+					</div>
+				</el-card>
+				<h3>车牌识别</h3>
+				<el-upload drag action="http://localhost:3000/imageRecognition?type=recognizeVehiclePlate"
+					:on-success="upsuccessLp" :on-error="uperror">
+					<i class="el-icon-upload"></i>
+					<div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+				</el-upload>
+				<el-card class="box-card">
+					<div class="text item">
+						{{'车牌号： ' + plate }}
+					</div>
+				</el-card>
+				<h3>行驶证识别</h3>
+				<el-upload drag action="http://localhost:3000/imageRecognition?type=recognizeDrivingLicense&side=face"
+					:on-success="upsuccessDil" :on-error="uperror">
+					<i class="el-icon-upload"></i>
+					<div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+				</el-upload>
+				<el-card class="box-card">
+					<div class="text item">
+						{{'车牌号码： ' + dilplate }}
+					</div>
+					<div class="text item">
+						{{'所有者： ' + dilowner }}
+					</div>
+				</el-card>
+				<h3>驾驶证识别</h3>
+				<el-upload drag action="http://localhost:3000/imageRecognition?type=recognizeDriverLicense&side=face"
+					:on-success="upsuccessDel" :on-error="uperror">
+					<i class="el-icon-upload"></i>
+					<div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+				</el-upload>
+				<el-card class="box-card">
+					<div class="text item">
+						{{'驾驶证号： ' + dellicense }}
+					</div>
+					<div class="text item">
+						{{'驾驶员： ' + delname }}
+					</div>
+				</el-card>
+			</el-main>
+		</el-container>
+	</div>
+</body>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+	new Vue({
+		el: "#app",
+		data: {
+			seen: "",
+			idName: "",
+			idNumber: "",
+			gender: "",
+			gov: "",
+			startDate: "",
+			endDate: "",
+			plate: "",
+			dilplate: "",
+			dilowner:"",
+			delname: "",
+			dellicense:""
+		},
+		methods: {
+			//身份证正面解析方法
+			upsuccessIdcf(response, file, fileList) {
+				var data = response.data[0].Data;
+				this.idName = data.FrontResult.Name;
+				this.gender = data.FrontResult.Gender;
+				this.idNumber = data.FrontResult.IDNumber;
+			},
+			//身份证背面解析方法
+			upsuccessIdcb(response, file, fileList) {
+				var data = response.data[0].Data;
+				this.startDate = data.BackResult.StartDate;
+				this.endDate = data.BackResult.EndDate;
+				this.gov = data.BackResult.Issue;
+				
+			},
+			//车牌解析方法
+			upsuccessLp(response, file, fileList) {
+				var data = response.data[0].Data;
+				this.plate = data.Plates.PlateNumber;
+			},
+			//行驶证解析方法
+			upsuccessDil(response, file, fileList) {
+				var data = response.data[0].Data;
+				this.dilplate = data.BackResult.PlateNumber;
+				this.dilowner = data.BackResult.Owner;
+			},
+			//驾驶证解析方法
+			upsuccessDel(response, file, fileList) {
+				var data = response.data[0].Data;
+				this.dellicense = data.BackResult.LicenseNumber;
+				this.delname = data.BackResult.Name;
+			},
+
+			uperror(err, file, fileList) {
+				this.$alert("上传失败");
+			},
+			
+		},
+	});
+</script>
+
+</html>
